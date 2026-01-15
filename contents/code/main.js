@@ -1,8 +1,4 @@
-var margin = readConfig("WindowMargin", 10);
-options.configChanged.connect(function () {
-  var newWidth = readConfig("MyIntegerInput", 10);
-  print("Config changed! New width: " + newWidth);
-});
+var margin = 2;
 var tilings = {};
 
 tileWindowToTheLeftOfScreen = (window, screen, area, quadWidth, quadHeight) => {
