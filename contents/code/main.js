@@ -1,11 +1,16 @@
+var margin = readConfig("WindowMargin", 10);
+options.configChanged.connect(function () {
+  var newWidth = readConfig("MyIntegerInput", 10);
+  print("Config changed! New width: " + newWidth);
+});
 var tilings = {};
 
 tileWindowToTheLeftOfScreen = (window, screen, area, quadWidth, quadHeight) => {
   window.frameGeometry = {
-    x: area.x,
-    y: area.y,
-    width: quadWidth / 2,
-    height: quadHeight,
+    x: area.x + margin,
+    y: area.y + margin,
+    width: quadWidth / 2 - 2 * margin,
+    height: quadHeight - 2 * margin,
   };
 
   tilings[window] = tileWindowToTheLeftOfScreen;
@@ -19,10 +24,10 @@ tileWindowToTheTopLeftOfScreen = (
   quadHeight,
 ) => {
   window.frameGeometry = {
-    x: area.x,
-    y: area.y,
-    width: quadWidth / 2,
-    height: quadHeight / 2,
+    x: area.x + margin,
+    y: area.y + margin,
+    width: quadWidth / 2 - 2 * margin,
+    height: quadHeight / 2 - 2 * margin,
   };
 
   tilings[window] = tileWindowToTheTopLeftOfScreen;
@@ -36,10 +41,10 @@ tileWindowToTheBottomLeftOfScreen = (
   quadHeight,
 ) => {
   window.frameGeometry = {
-    x: area.x,
-    y: area.y + quadHeight / 2,
-    width: quadWidth / 2,
-    height: quadHeight / 2,
+    x: area.x + margin,
+    y: area.y + quadHeight / 2 + margin,
+    width: quadWidth / 2 - 2 * margin,
+    height: quadHeight / 2 - 2 * margin,
   };
 
   tilings[window] = tileWindowToTheBottomLeftOfScreen;
@@ -53,10 +58,10 @@ tileWindowToTheRightOfScreen = (
   quadHeight,
 ) => {
   window.frameGeometry = {
-    x: area.x + quadWidth / 2,
-    y: area.y,
-    width: quadWidth / 2,
-    height: quadHeight,
+    x: area.x + quadWidth / 2 + margin,
+    y: area.y + margin,
+    width: quadWidth / 2 - 2 * margin,
+    height: quadHeight - 2 * margin,
   };
 
   tilings[window] = tileWindowToTheRightOfScreen;
@@ -70,10 +75,10 @@ tileWindownToTheTopRightOfScreen = (
   quadHeight,
 ) => {
   window.frameGeometry = {
-    x: area.x + quadWidth / 2,
-    y: area.y,
-    width: quadWidth / 2,
-    height: quadHeight / 2,
+    x: area.x + quadWidth / 2 + margin,
+    y: area.y + margin,
+    width: quadWidth / 2 - 2 * margin,
+    height: quadHeight / 2 - 2 * margin,
   };
 
   tilings[window] = tileWindownToTheTopRightOfScreen;
@@ -87,10 +92,10 @@ tileWindowToTheBottomRightOfScreen = (
   quadHeight,
 ) => {
   window.frameGeometry = {
-    x: area.x + quadWidth / 2,
-    y: area.y + quadHeight / 2,
-    width: quadWidth / 2,
-    height: quadHeight / 2,
+    x: area.x + quadWidth / 2 + margin,
+    y: area.y + quadHeight / 2 + margin,
+    width: quadWidth / 2 - 2 * margin,
+    height: quadHeight / 2 - 2 * margin,
   };
 
   tilings[window] = tileWindowToTheBottomRightOfScreen;
@@ -105,7 +110,7 @@ wrappingToTheLeft = (leftTiler, rightTiler) => {
 
       for (const candidate of workspace.screens) {
         if (candidate === screen) {
-          print("Skipping current area");
+          print("Skipping current screen");
           continue;
         }
 
@@ -118,7 +123,7 @@ wrappingToTheLeft = (leftTiler, rightTiler) => {
           continue;
         }
 
-        print("Checking area", candidate);
+        print("Checking screen", candidate.geometry);
 
         if (chosen === null) {
           chosen = candidate;
@@ -231,10 +236,10 @@ wrappingToTheRight = (leftTiler, rightTiler) => {
 
 theTop = (window, screen, area, quadWidth, quadHeight) => {
   window.frameGeometry = {
-    x: area.x,
-    y: area.y,
-    width: quadWidth,
-    height: quadHeight / 2,
+    x: area.x + margin,
+    y: area.y + margin,
+    width: quadWidth - 2 * margin,
+    height: quadHeight / 2 - 2 * margin,
   };
 
   tilings[window] = theTop;
@@ -242,10 +247,10 @@ theTop = (window, screen, area, quadWidth, quadHeight) => {
 
 theBottom = (window, screen, area, quadWidth, quadHeight) => {
   window.frameGeometry = {
-    x: area.x,
-    y: area.y + quadHeight / 2,
-    width: quadWidth,
-    height: quadHeight / 2,
+    x: area.x + margin,
+    y: area.y + quadHeight / 2 + margin,
+    width: quadWidth - 2 * margin,
+    height: quadHeight / 2 - 2 * margin,
   };
 
   tilings[window] = theBottom;
@@ -259,10 +264,10 @@ theWholeScreen = (window, screen, area, quadWidth, quadHeight) => {
   }
 
   window.frameGeometry = {
-    x: area.x,
-    y: area.y,
-    width: quadWidth,
-    height: quadHeight,
+    x: area.x + margin,
+    y: area.y + margin,
+    width: quadWidth - 2 * margin,
+    height: quadHeight - 2 * margin,
   };
 
   if (tilings[window] && tilings[window] != theWholeScreen) {
@@ -291,8 +296,8 @@ tileWindowTo = (pos, tiler) => {
     let window = workspace.activeWindow;
     let screen = window.output;
     let area = workspace.clientArea(KWin.MaximizeArea, window);
-    let quadWidth = Math.floor(area.width);
-    let quadHeight = Math.floor(area.height);
+    let quadWidth = area.width;
+    let quadHeight = area.height;
     if (window.desktopWindow) {
       print("Window is a desktop window, ignoring");
       return;
